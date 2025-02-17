@@ -1,4 +1,7 @@
-import  requests
+import sys
+
+import requests
+
 
 def geocoder(address):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
@@ -18,6 +21,7 @@ def geocoder(address):
         raise RuntimeError("ошибка запросов")
     return
 
+
 def get_spn(toponym_to_find):
     toponym = geocoder(toponym_to_find)
     if not toponym:
@@ -32,10 +36,33 @@ def get_spn(toponym_to_find):
     return dx, dy
 
 
-
 def get_coordinates(toponym_to_find):
     toponym = geocoder(toponym_to_find)
     toponym_coodrinates = toponym["Point"]["pos"]
     # Долгота и широта:
     lon, lan = toponym_coodrinates.split(" ")
     return float(lon), float(lan)
+
+
+def get_organization(address_ll, spn, text):
+    search_api_server = "https://search-maps.yandex.ru/v1/"
+    api_key = "dda3ddba-c9ea-4ead-9010-f43fbc15c6e3"
+
+    search_params = {
+        "apikey": api_key,
+        "text": text,
+        "lang": "ru_RU",
+        "ll": address_ll,
+        "type": "biz",
+        "spn": spn
+    }
+    response = requests.get(search_api_server, params=search_params)
+    if response:
+        json_response = response.json()
+        print(json_response)
+        # Получаем первую найденную организацию.
+        organization = json_response["features"][0]
+        return organization
+    else:
+        raise RuntimeError(response.status_code)
+        sys.exit(-1)
