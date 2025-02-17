@@ -1,7 +1,7 @@
 import sys
 
 import requests
-
+import math
 
 def geocoder(address):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
@@ -66,3 +66,15 @@ def get_organization(address_ll, spn, text):
     else:
         raise RuntimeError(response.status_code)
         sys.exit(-1)
+
+
+def get_distance(a, b):
+    a_lon, a_lan = a
+    b_lon, b_lan = b
+    factor = 111*1000
+    radians_lan = math.radians((a_lan + b_lan) / 2)
+    lan_lon_coeff = math.cos(radians_lan)
+    dx = abs(a_lon - b_lon) * factor * lan_lon_coeff
+    dy = abs(a_lan - b_lan) * factor
+    distance = math.sqrt(dx**2 + dy**2)
+    return distance
