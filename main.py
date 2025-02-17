@@ -2,7 +2,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 import sys
-from geocoder import get_coordinates, get_organization
+from geocoder import get_coordinates, get_organization, get_distance
 
 # toponym_to_find = ' '.join(sys.argv[1:])
 toponym_to_find = 'Тольятти Приморский бульвар, 40'
@@ -38,5 +38,8 @@ opened_image = Image.open(im)
 opened_image.show()
 
 org_time = organization["properties"]["CompanyMetaData"]['Hours']
-snippet = (f"Название:\t{org_name}\nАдрес:\t{org_address}\nВремя работы:\t{org_time}")
+a = (lon, lan)
+b = (point[0], point[1])
+distance = get_distance(a, b)
+snippet = (f"Название:\t{org_name}\nАдрес:\t{org_address}\nВремя работы:\t{org_time}\nРасстояние:\t{distance}")
 print(snippet)
